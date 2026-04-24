@@ -3,8 +3,6 @@ name: Deploy static content to Pages
 on:
   push:
     branches: ["main"]
-  pull_request:
-    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -14,10 +12,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-progress: true
-
-env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -27,12 +22,16 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v4
-        with:
-          path: '.'
+        uses: actions/upload-pages-artifact@v3
 
   deploy:
     environment:
@@ -43,4 +42,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v3
